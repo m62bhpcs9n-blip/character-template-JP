@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>TRPGキャラ設定特化シート「Deep Soul Sheet」</title>
+<style>
+  :root {
+    --accent: #9b59b6;     /* 紫系で“内面”っぽい雰囲気 */
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+  }
+  body {
+    font-family: "Noto Serif JP", "Sawarabi Mincho", serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .sheet {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+  .header {
+    background: linear-gradient(to right, #8e44ad, #9b59b6);
+    color: white;
+    padding: 30px;
+    text-align: center;
+  }
+  .header h1 { margin: 0; font-size: 2.5em; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+  .header p { margin: 10px 0 0; opacity: 0.9; }
+
+  .section {
+    margin: 25px;
+    background: #fdfdfd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+  .sec-title {
+    background: var(--accent);
+    color:_scheme white;
+    padding: 12px 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+  .content {
+    padding: 25px;
+  }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    border: none;
+    font-family: inherit;
+    resize: vertical;
+  }
+  textarea { min-height: 120px; }
+  input[type="text"] { padding: 10px 0; font-size: 1.1em; border-bottom: 2px dotted #ddd; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .quote {
+    font-style: italic;
+    color: #8e44ad;
+    font-size: 1.4em;
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f0ff;
+    border-left: 6px solid var(--accent);
+  }
+
+  @media print {
+    body { background: white; }
+    .sheet { box-shadow: none; }
+  }
+  @media (max-width: 800px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<script>
+// 【魔法の1行】ページを閉じても入力が残るようになる
+const SHEET_KEY = "trpg_deepsoul_sheet_data";
+
+// ページ読み込み時に保存データを復元
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem(SHEET_KEY);
+  if (saved) {
+  const data = JSON.parse(saved);
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+    if (data[el.id || el.placeholder]) {
+    el.value = data[el.id || el.placeholder];
+    }
+  });
+  }
+});
+
+// 入力が変更されるたびに自動保存（300msに1回だけ）
+let saveTimer;
+document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+  el.addEventListener('input', () => {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const data = {};
+    document.querySelectorAll('input[type="text"], textarea').forEach(field => {
+    // idが無くてもplaceholderで識別できるようにする
+    const key = field.id || field.placeholder || field.name;
+    if (key) data[key] = field.value;
+    });
+    localStorage.setItem(SHEET_KEY, JSON.stringify(data));
+  }, 300);
+  });
+});
+
+// 【おまけ】手動で「保存完了！」ボタン欲しい人向け
+document.body.insertAdjacentHTML('beforeend', `
+  <div style="text-align:center; margin:20px;ont-size:1.2em;">
+    <button onclick="alert('保存しました！（実は入力するたび自動保存されてます）')" style="padding:10px 30px; font-size:1em;">
+      保存完了！
+    </button>
+    <button onclick="if(confirm('本当に全削除しますか？')){localStorage.removeItem('trpg_deepsoul_sheet_data');location.reload();}" style="margin-left:10px; background:#e74c3c; color:white;">
+      全削除
+    </button>
+  </div>
+`);
+</script>
+<body>
+
+<div class="sheet">
+
+  <div class="header">
+    <h1>Deep Soul Sheet</h1>
+    <p>～このキャラクターが“生きている”と感じるための100の質問～</p>
+  </div>
+
+  <!-- 基本の三行 -->
+  <div class="section">
+    <div class="sec-title">① 表の顔</div>
+    <div class="content">
+      <input type="text" placeholder="キャラクター名（フルネームもあれば）">
+      <input type="text" placeholder="通り名・異名・キャッチフレーズ（例：緋色の魔女／笑顔の殺し屋）">
+      <input type="text" placeholder="一言で表すとどんな人？（例：いつも笑顔だけど目は笑ってない元傭兵）">
+    </div>
+  </div>
+
+  <!-- 見た目＆第一印象 -->
+  <div class="section">
+    <div class="sec-title">② 外見と雰囲気</div>
+    <div class="content">
+      <textarea placeholder="・身長／体型／髪の色や長さ／目の色
+・服装の特徴（いつも同じマフラーを巻いている など）
+・表情や癖（無意識に髪を触る、目を合わせない など）
+・初対面の人が一番覚える特徴は？"></textarea>
+    </div>
+  </div>
+
+  <!-- 決定的な一言 -->
+  <div class="quote">
+    「このキャラを一言で表すなら……<br>
+    <input type="text" placeholder="（例：世界を救うために世界を壊す覚悟がある）" style="font-size:1.3em; text-align:center; border:none; background:transparent; color:#8e44ad;">
+    」
+  </div>
+
+  <!-- 核心部分（ここが一番大事！） -->
+  <div class="section">
+    <div class="sec-title">③ 心の核（これが無くなるとこのキャラじゃなくなるもの）</div>
+    <div class="content two-col">
+      <div>
+        <strong>最大のトラウマ／喪失体験</strong>
+        <textarea placeholder="例：10年前、目の前で妹を魔物に殺された"></textarea>
+      </div>
+      <div>
+        <strong>今一番守りたいもの／人</strong>
+        <textarea placeholder="例：残された家族の平穏な日常"></textarea>
+      </div>
+      <div>
+        <strong>絶対に許せないこと</strong>
+        <textarea placeholder="例：弱者を弄ぶ者"></textarea>
+      </div>
+      <div>
+        <strong>死んでも貫きたい信念</strong>
+        <textarea placeholder="例：どんな相手にも敬意を払って殺す"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">④ 秘密と矛盾</div>
+    <div class="content two-col">
+      <div>
+        <strong>本人も忘れたい過去／黒歴史</strong>
+        <textarea></textarea>
+      </div>
+      <div>
+        <strong>パーティに絶対知られたくない秘密</strong>
+        <textarea placeholder="例：実は敵組織のスパイだった過去がある"></textarea>
+      </div>
+      <div>
+        <strong>表の顔と裏の顔のギャップ</strong>
+        <textarea placeholder="例：普段は優しい先生だが夜は連続殺人鬼"></textarea>
+      </div>
+      <div>
+        <strong>自分でも気づいていない本当の望み</strong>
+        <textarea placeholder="例：本当はただ普通に誰かに愛されたいだけ"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">⑤ 人間関係マップ（超重要！）</div>
+    <div class="content">
+      <textarea placeholder="【最愛の人】名前：関係性：どんな感情を抱いているか
+【最大の敵】名前：理由：殺したい？生かしておきたい？
+【借りがある人】
+【一生許さない人】
+【実は血が繋がっている人】
+【この人にだけは弱音を吐ける】
+などなど、思いつく限り全部書いて！"></textarea>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">⑥ 口癖と決め台詞</div>
+    <div class="content">
+      <textarea placeholder="・日常の口癖：「まぁ、そういうこともあるよね」
+・戦闘時の決め台詞：「お前には、地獄が似合う。」
+・死に際に言いそうな一言：
+・誰かに看取られたい時の願い："></textarea>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">⑦ 自由記述：このキャラが“生きている”と感じる瞬間</div>
+    <div class="content">
+      <textarea style="min-height:250px;" placeholder="ここに全部ぶちまけてください。
+このキャラが朝起きてから寝るまでの一日を想像してみるのもおすすめ。
+好きな食べ物、嫌いな匂い、宝物にしている品物、などなど……
+書けば書くほど、このキャラは本当にそこに“いる”ようになります。"></textarea>
+    </div>
+  </div>
+
+  <!-- 最後に小さく戦闘用ステータス（必要最低限） -->
+  <div class="section" style="background:#f9f9f9; font-size:0.9em;">
+    <div class="sec-title">おまけ：最低限の戦闘ステータス（必要な人だけ記入）</div>
+    <div class="content two-col">
+      <div><strong>種族・職業</strong> <input type="text"></div>
+      <div><strong>レベル／HP／AC</strong> <input type="text"></div>
+      <div><strong>得意武器・魔法</strong> <textarea rows="2"></textarea></div>
+      <div><strong>特技・特徴</strong> <textarea rows="2"></textarea></div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
